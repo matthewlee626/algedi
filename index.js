@@ -22,9 +22,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/testAPI", testAPIRouter);
+ */
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -51,7 +53,9 @@ app.get('*', (req, res) => {
 })
 
 // Choose the port and start the server
+
 const PORT = process.env.PORT || 5000
+
 app.listen(PORT, () => {
   console.log(`Mixing it up on port ${PORT}`)
 })

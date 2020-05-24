@@ -2,6 +2,7 @@ const express = require('express')
 const cowsay = require('cowsay')
 const cors = require('cors')
 const path = require('path')
+const api_helper = require('./API_helper')
 
 // Create the server
 const app = express()
@@ -10,25 +11,42 @@ const app = express()
 app.use(express.static(path.join(__dirname, 'client/build')))
 
 // Serve our api route /cow that returns a custom talking text cow
-app.get('/api/cow/:say', cors(), async (req, res, next) => {
+app.get('/api/restrooms/:place', cors(), async (req, res, next) => {
   try {
-    const text = req.params.say
-    const moo = cowsay.say({ text })
-    res.json({ moo })
+    const place = req.params.place
+    api_helper.make_API_call('https://www.refugerestrooms.org/api/v1/restrooms/search?page=1&per_page=30&offset=0&ada=true&unisex=true&query='+place.trim())
+    .then(response => {
+        res.json(response)
+        //console.log(response)
+    })
   } catch (err) {
     next(err)
   }
 })
 
-// Serve our base route that returns a Hellow World cow
-app.get('/api/cow/', cors(), async (req, res, next) => {
+
+app.get('/api/restrooms/:lat/:lng', cors(), async (req, res, next) => {
   try {
-    const moo = cowsay.say({ text: 'Hello World!' })
-    res.json({ moo })
+    const lat = req.params.lat    
+    const lng = req.params.lng
+    api_helper.make_API_call(`https://www.refugerestrooms.org/api/v1/restrooms/by_location?page=1&per_page=30&offset=0&lat=${lat}&lng=${lng}`)
+    .then(response => {
+        res.json(response)
+        //console.log(response)
+    })
   } catch (err) {
     next(err)
   }
 })
+// Serve our base route that returns a Hellow World cow
+// app.get('/api/cow/', cors(), async (req, res, next) => {
+//   try {
+//     const moo = cowsay.say({ text: 'Hello World!' })
+//     res.json({ moo })
+//   } catch (err) {
+//     next(err)
+//   }
+// })
 
 // Anything that doesn't match the above, send back the index.html file
 app.get('*', (req, res) => {
